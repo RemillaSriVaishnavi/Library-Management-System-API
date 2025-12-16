@@ -231,7 +231,7 @@ POST /transactions/return
 ### Using .http File (Recommended)
 
 ### File: requests.http
-```http
+```h
 ### Borrow a book
 POST http://localhost:3000/transactions/borrow
 Content-Type: application/json
