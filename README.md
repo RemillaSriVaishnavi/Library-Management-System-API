@@ -232,7 +232,7 @@ POST /transactions/return
 
 ### File: requests.http
 ```h
-## Borrow a book
+--- Borrow a book
 POST http://localhost:3000/transactions/borrow
 Content-Type: application/json
 
@@ -240,8 +240,7 @@ Content-Type: application/json
   "book_id": 1,
   "member_id": 1
 }
-
-## Return a book
+--- Return a book
 POST http://localhost:3000/transactions/return
 Content-Type: application/json
 
