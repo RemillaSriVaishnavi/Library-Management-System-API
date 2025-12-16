@@ -27,33 +27,41 @@ This project demonstrates **database design**, **business rule enforcement**, **
 ---
 
 ## 📦 Project Structure
-
+```text
 Library-API-Mandatory-Task-4/
 │
 ├── src/
 │   ├── controllers/
-|   |   └── bookController.js
-|   |   └── fineController.js
-|   |   └── memberController.js
+│   │   ├── bookController.js
+│   │   ├── fineController.js
+│   │   ├── memberController.js
 │   │   └── transactionController.js
+│   │
 │   ├── models/
 │   │   └── db.js
+│   │
 │   ├── routes/
-|   |   └── books.js
-|   |   └── fines.js
-|   |   └── members.js
+│   │   ├── books.js
+│   │   ├── fines.js
+│   │   ├── members.js
 │   │   └── transactions.js
+│   │
 │   ├── services/              # Optional helper logic
 │   │   ├── bookStateService.js
 │   │   └── businessRulesService.js
+│   │
 │   ├── utils/
 │   │   └── dateUtils.js
+│   │
 │   └── app.js
 │
+├── .gitignore
 ├── requests.http              # API testing file
 ├── package.json
 └── README.md
 
+
+```
 
 
 ---
@@ -79,17 +87,20 @@ cd Library-API-Mandatory-Task-4
 
 ```
 ### 3️⃣ Install Dependencies
+```bash
 npm install
+```
 
 ### 4️⃣ MySQL Setup
-Create Database
+#### Create Database
+```sql
 CREATE DATABASE library_management;
 USE library_management;
-
+```
 Create Tables
 
-Books Table
-
+#### 📘 Books Table
+```sql
 CREATE TABLE books (
   book_id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -98,10 +109,10 @@ CREATE TABLE books (
   year_published INT,
   available_copies INT NOT NULL
 );
+````
 
-
-Members Table
-
+#### 👤 Members Table
+```sql
 CREATE TABLE members (
   member_id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -109,10 +120,10 @@ CREATE TABLE members (
   phone VARCHAR(20),
   join_date DATE
 );
+```
 
-
-Transactions Table
-
+#### 🔁 Transactions Table
+```sql
 CREATE TABLE transactions (
   transaction_id INT AUTO_INCREMENT PRIMARY KEY,
   member_id INT,
@@ -124,13 +135,10 @@ CREATE TABLE transactions (
   FOREIGN KEY (member_id) REFERENCES members(member_id),
   FOREIGN KEY (book_id) REFERENCES books(book_id)
 );
+```
 
-5️⃣ Configure Database Connection
-
-Edit:
-
-src/models/db.js
-
+### 5️⃣ Configure Database Connection
+```js
 const mysql = require('mysql2');
 
 const db = mysql.createPool({
@@ -141,17 +149,18 @@ const db = mysql.createPool({
 });
 
 module.exports = db;
+```
 
-6️⃣ Start the Server
+### 6️⃣ Start the Server
+```bash
 npm start
-
-
+```
+```bash
 Expected output:
-
 Server running on port 3000
+```
 
-
-🔄 State Machine (Book Status Logic)
+#### 🔄 State Machine (Book Status Logic)
 
 Books do not have a separate status column.
 Instead, state is derived from available_copies and transactions.
@@ -165,71 +174,65 @@ Transaction States
 Status	Meaning
 BORROWED	Book currently issued
 RETURNED	Book returned
-📏 Business Rules Enforced
 
-A member must exist to borrow a book
+### 📏 Business Rules Enforced
+- A member must exist to borrow a book
+- A book must exist and have available copies
+- Available copies decrease on borrow
+- Available copies increase on return
+- Borrow duration limit: 7 days
+- Fine: ₹10 per extra day
+- Only BORROWED transactions can be returned
 
-A book must exist and have available copies
 
-Available copies decrease on borrow
-
-Available copies increase on return
-
-Borrow duration limit: 7 days
-
-Fine: ₹10 per extra day
-
-A transaction must be in BORROWED state to be returned
-
-🔌 API Documentation
-1️⃣ Borrow Book
-
-Endpoint
+## 🔌 API Documentation
+### 1️⃣ Borrow Book
+#### Endpoint
 
 POST /transactions/borrow
 
 
-Request Body
-
+#### Request Body
+```json
 {
   "book_id": 1,
   "member_id": 1
 }
+```
 
-
-Success Response
-
+#### Success Response
+```json
 {
   "message": "Book borrowed successfully"
 }
-
-2️⃣ Return Book
-
-Endpoint
+```
+### 2️⃣ Return Book
+#### Endpoint
 
 POST /transactions/return
 
 
-Request Body
-
+#### Request Body
+```json
 {
   "transaction_id": 1
 }
+```
 
-
-Success Response
-
+#### Success Response
+```jon
 {
   "message": "Book returned successfully",
   "fine": 0
 }
+```
 
-🧪 API Testing (PHASE 9)
-Using .http File (Recommended)
+## 🧪 API Testing (PHASE 9)
+### Using .http File (Recommended)
 
-File: requests.http
-
-### Borrow a book
+### File: requests.http
+```http
+# Borrow a book
 POST http://localhost:3000/transactions/borrow
 Content-Type: application/json
 
@@ -238,7 +241,7 @@ Content-Type: application/json
   "member_id": 1
 }
 
-### Return a book
+# Return a book
 POST http://localhost:3000/transactions/return
 Content-Type: application/json
 
@@ -246,27 +249,22 @@ Content-Type: application/json
   "transaction_id": 1
 }
 
-Tool Required
+```
 
-VS Code Extension: REST Client (by Huachao Mao)
+### Tool Required
+- VS Code Extension: REST Client (by Huachao Mao)
 
-📄 Controller Logic Summary
+## 📄 Controller Logic Summary
 
 The core logic is implemented in:
-
+```bash
 src/controllers/transactionController.js
-
+```
 
 It handles:
-
-Member validation
-
-Book availability checks
-
-Transaction creation
-
-State updates
-
-Fine calculation
-
-Database consistency
+- Member validation
+- Book availability checks
+- Transaction creation
+- State updates
+- Fine calculation
+- Database consistency enforcement
