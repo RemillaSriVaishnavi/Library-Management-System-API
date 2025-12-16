@@ -1,0 +1,17 @@
+### Borrow a book
+POST http://localhost:3000/transactions/borrow
+Content-Type: application/json
+
+{
+  "book_id": 1,
+  "member_id": 1
+}
+
+
+### Return a book
+POST http://localhost:3000/transactions/return
+Content-Type: application/json
+
+{
+  "transaction_id": 1
+}
